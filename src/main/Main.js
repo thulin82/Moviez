@@ -8,10 +8,13 @@ const movieUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${process.
 
 class Main extends React.Component {
   state = {
+    total_pages: 1,
+    page: 1,
     url: genreUrl,
     moviesUrl: movieUrl,
     genre: "comedy",
     genres: [],
+    movies: [],
     year: {
       label: "year",
       min: 1990,
@@ -52,13 +55,39 @@ class Main extends React.Component {
     });
   };
 
+  componentDidMount() {
+    this.fetchMovies(this.state.moviesUrl);
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (this.state.moviesUrl !== nextState.moviesUrl) {
+      this.fetchMovies(nextState.moviesUrl);
+    }
+  }
+
+  fetchMovies = (url) => {
+    fetch(url)
+      .then(response => response.json())
+      .then(data => this.storeMovies(data))
+      .catch(error => console.log(error));
+  }
+
+  storeMovies = data => {
+    const movies = data.results.map(result => {
+      const  { vote_count, id, genre_ids, poster_path, title, vote_average, release_date } = result;
+      return { vote_count, id, genre_ids, poster_path, title, vote_average, release_date };
+    });
+
+    this.setState({movies, total_pages: data.total_pages})
+  }
+
   generateUrl = () => {
-    const {genres, year, rating, runtime } = this.state;
+    const {genres, year, rating, runtime, page } = this.state;
     const selectedGenre = genres.find( genre => genre.name === this.state.genre);
     const genreId = selectedGenre.id;
 
     const moviesUrl = `https://api.themoviedb.org/3/discover/movie?` +
-      `api_key=${process.env.REACT_APP_TMDB_API_KEY}&` +
+      `api_key=651925d45022d1ae658063b443c99784&` +
       `language=en-US&sort_by=popularity.desc&` +
       `with_genres=${genreId}&` +
       `primary_release_date.gte=${year.value.min}-01-01&` +
@@ -67,7 +96,7 @@ class Main extends React.Component {
       `vote_average.lte=${rating.value.max}&` +
       `with_runtime.gte=${runtime.value.min}&` +
       `with_runtime.lte=${runtime.value.max}&` +
-      `page=1&`;
+      `page=${page}`;
 
     this.setState({ moviesUrl });
   }
@@ -86,7 +115,7 @@ class Main extends React.Component {
           onSearchButtonClick={this.onSearchButtonClick}
           {...this.state}
         />
-        <Movies url={this.state.moviesUrl}/>
+        <Movies movies={this.state.movies}/>
       </section>
     )
   }
