@@ -2,6 +2,7 @@ import React from "react";
 import "./Navigation.css";
 import Selection from "./Selection";
 import Slider from "./Slider";
+import SearchButton from './SearchButton';
 
 class Navigation extends React.Component {
   componentDidMount() {
@@ -23,6 +24,8 @@ class Navigation extends React.Component {
         <Slider data={year} onChange={onChange} />
         <Slider data={rating} onChange={onChange} />
         <Slider data={runtime} onChange={onChange} />
+
+        <SearchButton onClick={this.props.onSearchButtonClick} />
 
       </section>
     )
