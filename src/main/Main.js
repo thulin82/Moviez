@@ -12,7 +12,7 @@ class Main extends React.Component {
     page: 1,
     url: genreUrl,
     moviesUrl: movieUrl,
-    genre: "comedy",
+    genre: "Comedy",
     genres: [],
     movies: [],
     year: {
@@ -63,6 +63,9 @@ class Main extends React.Component {
     if (this.state.moviesUrl !== nextState.moviesUrl) {
       this.fetchMovies(nextState.moviesUrl);
     }
+    if (this.state.page !== nextState.page) {
+      this.generateUrl();
+    }
   }
 
   fetchMovies = (url) => {
@@ -102,7 +105,23 @@ class Main extends React.Component {
   }
 
   onSearchButtonClick = () => {
+    this.setState({page: 1});
     this.generateUrl();
+  }
+
+  onPageIncrease = () => {
+    const { page, total_pages } = this.state
+    const nextPage = page + 1;
+    if (nextPage <= total_pages) {
+      this.setState({ page: nextPage })
+    }
+  }
+  
+  onPageDecrease = () => {
+    const nextPage = this.state.page - 1;
+    if ( nextPage > 0 ) {
+      this.setState({ page: nextPage })
+    }
   }
 
   render() {
@@ -115,7 +134,12 @@ class Main extends React.Component {
           onSearchButtonClick={this.onSearchButtonClick}
           {...this.state}
         />
-        <Movies movies={this.state.movies}/>
+        <Movies 
+          movies={this.state.movies}
+          page={this.state.page}
+          onPageIncrease={this.onPageIncrease}
+          onPageDecrease={this.onPageDecrease}
+        />
       </section>
     )
   }
