@@ -6,6 +6,7 @@ import Slider from "./Slider";
 class Navigation extends React.Component {
   state = {
     genre: "comedy",
+    genres: [],
     year: {
       label: "year",
       min: 1990,
@@ -29,6 +30,15 @@ class Navigation extends React.Component {
     }
   }
 
+  componentDidMount() {
+    const genreUrl = `https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US`
+
+    fetch(genreUrl)
+      .then(response => response.json())
+      .then(data => this.setState({genres: data.genres }))
+      .catch(error => console.log(error))
+  }
+
   onGenreChange = event => {
     this.setState({genre: event.target.value});
   }
@@ -45,9 +55,10 @@ class Navigation extends React.Component {
   render() {
     return (
       <section className="navigation">
-        < Selection 
+        < Selection
+          genres={this.state.genres} 
           genre={this.state.genre}
-          onGenreChange={this.state.onGenreChange}
+          onGenreChange={this.onGenreChange}
         />
         <Slider data={this.state.year} onChange={this.onChange} />
         <Slider data={this.state.rating} onChange={this.onChange} />
