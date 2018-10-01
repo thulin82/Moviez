@@ -1,13 +1,15 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./MovieListItem.css";
 
 const MovieListItem = ({ movie }) => {
-  const { title, poster_path, release_date, vote_average } = movie;
+  const { id, title, poster_path, release_date, vote_average } = movie;
   const imgUrl = `https://image.tmdb.org/t/p/w342/${poster_path}`;
   const year = release_date.substring(0, 4);
 
   return (
     <li className="movie-item">
+    <Link to={`/movies/${id}`} className="thumbnail">
       <img src={imgUrl} alt={title}/>
       <div className="movie-description">
         <h2>{title}</h2>
@@ -22,6 +24,7 @@ const MovieListItem = ({ movie }) => {
         </div>
         </section>
       </div>
+      </Link>
     </li>
   )
 }
